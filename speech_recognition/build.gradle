@@ -1,0 +1,84 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'maven-publish'
+
+android {
+    compileSdkVersion 34
+    buildToolsVersion "34.0.0"
+    namespace = "com.speech_recognition"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+    dataBinding {
+        enabled = false
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    kapt libs.compiler
+    implementation libs.androidx.appcompat.v110
+    implementation libs.androidx.core.ktx.v120
+
+    implementation libs.kotlin.stdlib
+    implementation libs.kotlin.stdlib.jdk7
+    implementation libs.kotlin.stdlib.jdk8
+
+    implementation libs.material.v100
+    implementation libs.material.v110beta01
+    testImplementation libs.junit.v412
+    androidTestImplementation libs.androidx.junit.v111
+    androidTestImplementation libs.androidx.espresso.core
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId = 'com.rcotruck.speechRecognization' // Replace with your group ID
+                artifactId = 'dks'                  // Replace with your artifact ID (library name)
+                version = '1.0.0'                   // Replace with your library version
+
+                // Specify the Android library's release AAR and source files to publish
+                from components.release
+            }
+        }
+    }
+}
+
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
+
+    configuration {
+        includeNonPublic = false
+        skipEmptyPackages = true
+        skipDeprecated = true
+        reportUndocumented = true
+        jdkVersion = 8
+    }
+}
